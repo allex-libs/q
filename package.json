@@ -1,0 +1,22 @@
+{
+  "name": "allex_q",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.hers.rs:allex_libs/q.git"
+  },
+  "keywords": [
+    "allex",
+    "libs"
+  ],
+  "author": "HERS development team",
+  "license": "ISC",
+  "dependencies": {
+    "q": "^1.4.1"
+  }
+}
