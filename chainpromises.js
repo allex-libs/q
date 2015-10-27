@@ -19,7 +19,7 @@ function create(execlib){
   };
 
   Chainer.prototype.next = function (){
-    if (!this.ftions.length) {
+    if (this.index >= this.ftions.length-1) {
       this.d.resolve(this.results);
       return;
     }
