@@ -22,7 +22,7 @@ function createPromiseExecutorJob(execlib, JobBase) {
     }
     var promiseprovider = this.promiseproviderarry[index],
       next = this.doPromise.bind(this, index+1);
-    promiseprovider(result).then(
+    promiseprovider().then(
       next,
       next
     );
