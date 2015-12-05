@@ -1,9 +1,11 @@
 function createlib (execlib) {
   'use strict';
+  var lib = execlib.lib;
 
   var JobBase = require('./jobbasecreator')(execlib),
-    PromiseChainerJob= require('./promisechainerjobcreator')(execlib, JobBase),
-    PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, JobBase),
+    PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase),
+    PromiseChainerJob= require('./promisechainerjobcreator')(execlib, PromiseArrayFulfillerJob),
+    PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, PromiseArrayFulfillerJob),
     PromiseHistoryChainerJob = require('./promisehistorychainerjobcreator')(execlib, JobBase, PromiseChainerJob),
     PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob);
 
@@ -25,6 +27,38 @@ function createlib (execlib) {
     );
     return defer.promise;
   }
+  function standardErrReporter(reason) {
+    console.error(reason);
+  }
+  function promise2execution(promise, cb, errcb, notifycb) {
+    promise.then(
+      function(){
+        console.log('time to fire cb'); 
+        try{
+          cb();
+        } catch(e) {
+          console.error(e.stack);
+          console.error(e);
+        }
+      },
+      errcb || standardErrReporter,
+      notifycb || lib.dummyFunc
+    );
+    return promise;
+  }
+  function promise2console(promise, caption) {
+    if (caption) {
+      caption += ' ';
+    } else {
+      caption = '';
+    }
+    promise.then(
+      console.log.bind(console, caption+'ok'),
+      console.error.bind(console, caption+'nok'),
+      console.log.bind(console, caption+'progress')
+    );
+    return promise;
+  }
   return {
     chainPromises : require('./chainpromises')(execlib),
     JobBase: JobBase,
@@ -35,7 +69,9 @@ function createlib (execlib) {
     JobCollection: require('./jobcollectioncreator')(execlib),
     returner: returner,
     applier: applier,
-    promise2defer: promise2defer
+    promise2defer: promise2defer,
+    promise2execution: promise2execution,
+    promise2console: promise2console
   };
 }
 

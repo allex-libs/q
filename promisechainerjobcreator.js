@@ -1,30 +1,14 @@
-function createPromiseChainerJob(execlib, JobBase) {
+function createPromiseChainerJob(execlib, PromiseArrayFulfillerJob) {
   'use strict';
-  var lib = execlib.lib,
-    q = require('q');
+  var lib = execlib.lib;
 
   function PromiseChainerJob(promiseproviderarry) {
-    JobBase.call(this);
-    this.promiseproviderarry = promiseproviderarry;
+    PromiseArrayFulfillerJob.call(this, promiseproviderarry);
   }
-  lib.inherit(PromiseChainerJob, JobBase);
-  PromiseChainerJob.prototype.destroy = function () {
-    this.promiseproviderarry = null;
-    JobBase.prototype.destroy.call(this);
-  };
-  PromiseChainerJob.prototype.go = function () {
-    this.doPromise(0);
-  };
-  PromiseChainerJob.prototype.doPromise = function (index, result) {
-    if (index >= this.promiseproviderarry.length) {
-      this.resolve(result);
-      return;
-    }
-    var promiseprovider = this.promiseproviderarry[index];
-    promiseprovider(result).then(
-      this.doPromise.bind(this, index+1),
-      this.reject.bind(this)
-    );
+  lib.inherit(PromiseChainerJob, PromiseArrayFulfillerJob);
+
+  PromiseChainerJob.prototype.activatePromiseProvider = function (promiseprovider, previousresult){
+    return promiseprovider(previousresult);
   };
 
   return PromiseChainerJob;

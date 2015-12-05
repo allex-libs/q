@@ -1,31 +1,14 @@
-function createPromiseExecutorJob(execlib, JobBase) {
+function createPromiseExecutorJob(execlib, PromiseArrayFulfillerJob) {
   'use strict';
-  var lib = execlib.lib,
-    q = require('q');
+  var lib = execlib.lib;
 
   function PromiseExecutorJob(promiseproviderarry) {
-    JobBase.call(this);
-    this.promiseproviderarry = promiseproviderarry;
+    PromiseArrayFulfillerJob.call(this, promiseproviderarry);
   }
-  lib.inherit(PromiseExecutorJob, JobBase);
-  PromiseExecutorJob.prototype.destroy = function () {
-    this.promiseproviderarry = null;
-    JobBase.prototype.destroy.call(this);
-  };
-  PromiseExecutorJob.prototype.go = function () {
-    this.doPromise(0);
-  };
-  PromiseExecutorJob.prototype.doPromise = function (index, result) {
-    if (index >= this.promiseproviderarry.length) {
-      this.resolve(result);
-      return;
-    }
-    var promiseprovider = this.promiseproviderarry[index],
-      next = this.doPromise.bind(this, index+1);
-    promiseprovider().then(
-      next,
-      next
-    );
+  lib.inherit(PromiseExecutorJob, PromiseArrayFulfillerJob);
+
+  PromiseExecutorJob.prototype.activatePromiseProvider = function (promiseprovider, previousresult) {
+    return promiseprovider();
   };
 
   return PromiseExecutorJob;
