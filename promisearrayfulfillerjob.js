@@ -14,6 +14,7 @@ function createPromiseArrayFulfillerJob(execlib, JobBase) {
   };
   PromiseArrayFulfillerJob.prototype.go = function () {
     this.doPromise(0);
+    return this.defer.promise;
   };
   PromiseArrayFulfillerJob.prototype.doPromise = function (index, result) {
     //console.log('doing promise at', index, 'out of', this.promiseproviderarry.length);
