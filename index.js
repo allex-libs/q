@@ -1,6 +1,7 @@
 function createlib (execlib) {
   'use strict';
-  var lib = execlib.lib;
+  var lib = execlib.lib,
+    q = require('q');
 
   var JobBase = require('./jobbasecreator')(execlib),
     PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase),
@@ -31,20 +32,19 @@ function createlib (execlib) {
     console.error(reason);
   }
   function promise2execution(promise, cb, errcb, notifycb) {
-    promise.then(
+    return promise.then(
       function(){
-        console.log('time to fire cb'); 
         try{
-          cb();
+          return cb();
         } catch(e) {
           console.error(e.stack);
           console.error(e);
+          return q.reject(e);
         }
       },
       errcb || standardErrReporter,
       notifycb || lib.dummyFunc
     );
-    return promise;
   }
   function promise2console(promise, caption) {
     if (caption) {
