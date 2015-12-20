@@ -8,7 +8,8 @@ function createlib (execlib) {
     PromiseChainerJob= require('./promisechainerjobcreator')(execlib, PromiseArrayFulfillerJob),
     PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, PromiseArrayFulfillerJob),
     PromiseHistoryChainerJob = require('./promisehistorychainerjobcreator')(execlib, JobBase, PromiseChainerJob),
-    PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob);
+    PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob),
+    PromiseExecutionMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseExecutorJob);
 
   function returner(val) {
     return function() {
@@ -59,7 +60,7 @@ function createlib (execlib) {
     );
     return promise;
   }
-  return {
+  var ret = {
     chainPromises : require('./chainpromises')(execlib),
     JobBase: JobBase,
     PromiseChainerJob: PromiseChainerJob,
@@ -73,6 +74,11 @@ function createlib (execlib) {
     promise2execution: promise2execution,
     promise2console: promise2console
   };
+
+  ret.PromiseChainMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseMapperJob);
+  ret.PromiseExecutionMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseExecutionMapperJob);
+  
+  return ret;
 }
 
 module.exports = createlib;

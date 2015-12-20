@@ -1,4 +1,4 @@
-function createPromiseMapper(execlib, JobBase, PromiseChainerJob) {
+function createPromiseMapper(execlib, JobBase, PromiseArrayFulfillerJob) {
   'use strict';
   var lib = execlib.lib,
     q = require('q');
@@ -16,7 +16,7 @@ function createPromiseMapper(execlib, JobBase, PromiseChainerJob) {
   };
   PromiseMapperJob.prototype.go = function () {
     var result = this.paramarry;
-    var chainer = new PromiseChainerJob(this.promiseproviderarry.map(this.resultPutter.bind(this, result)));
+    var chainer = new PromiseArrayFulfillerJob(this.promiseproviderarry.map(this.resultPutter.bind(this, result)));
     chainer.defer.promise.then(
       this.resolve.bind(this, result),
       this.reject.bind(this)
@@ -39,7 +39,7 @@ function createPromiseMapper(execlib, JobBase, PromiseChainerJob) {
     }
   };
 
-  return PromiseMapperJob
+  return PromiseMapperJob;
 }
 
 module.exports = createPromiseMapper;
