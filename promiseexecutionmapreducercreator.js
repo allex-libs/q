@@ -12,7 +12,7 @@ function createPromiseExecutionMapReducer (execlib, qlib, MapperJob) {
   PromiseExecutionMapReducer.prototype.destroy = function () {
     this.applier = null;
     this.mapper = null;
-    JobBase.prototype.destroy.call(this);
+    qlib.JobBase.prototype.destroy.call(this);
   };
 
   PromiseExecutionMapReducer.prototype.go = function () {

@@ -16,6 +16,11 @@ function createlib (execlib) {
       return val;
     }
   };
+  function executor(fn, ctx) {
+    return function () {
+      return fn.call(ctx);
+    }
+  }
   function applier(fn, ctx) {
     return function (arry) {
       return fn.apply(ctx, arry);
@@ -69,6 +74,7 @@ function createlib (execlib) {
     PromiseMapperJob: PromiseMapperJob,
     JobCollection: require('./jobcollectioncreator')(execlib),
     returner: returner,
+    executor: executor,
     applier: applier,
     promise2defer: promise2defer,
     promise2execution: promise2execution,
