@@ -3,8 +3,8 @@ function createJobBase(execlib) {
   var lib = execlib.lib,
     q = require('q');
 
-  function JobBase() {
-    this.defer = q.defer();
+  function JobBase(defer) {
+    this.defer = (defer && q.isPromise(defer.promise)) ? defer : q.defer();
     this.result = null;
     this.error = null;
   }
@@ -21,12 +21,23 @@ function createJobBase(execlib) {
     this.defer = null;
   };
   JobBase.prototype.resolve = function (result) {
+    if (!this.defer) {
+      return;
+    }
     this.result = result;
     this.destroy();
   };
   JobBase.prototype.reject = function (error) {
+    if (!this.defer) {
+      return;
+    }
     this.error = error;
     this.destroy();
+  };
+  JobBase.prototype.notify = function (progress) {
+    if (this.defer) {
+      this.defer.notify(progress);
+    }
   };
 
   return JobBase;
