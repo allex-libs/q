@@ -15,8 +15,5 @@
     "libs"
   ],
   "author": "HERS development team",
-  "license": "ISC",
-  "dependencies": {
-    "q": "^1.4.1"
-  }
+  "license": "ISC"
 }
