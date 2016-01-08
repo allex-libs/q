@@ -1,6 +1,6 @@
 function createPromiseExecutionMapReducer (execlib, qlib, MapperJob) {
   var lib = execlib.lib,
-    q = require('q');
+    q = lib.q;
 
   function PromiseExecutionMapReducer(promiseproviderarry, paramarry, fn, ctx) {
     qlib.JobBase.call(this);

@@ -1,7 +1,8 @@
 function createlib (execlib) {
   'use strict';
-  var lib = execlib.lib,
-    q = require('q');
+  var lib = execlib.lib;
+  console.log('============>>', lib.q);
+  var q = lib.q;
 
   var JobBase = require('./jobbasecreator')(execlib),
     PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase),

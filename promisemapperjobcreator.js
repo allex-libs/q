@@ -1,7 +1,7 @@
 function createPromiseMapper(execlib, JobBase, PromiseArrayFulfillerJob) {
   'use strict';
   var lib = execlib.lib,
-    q = require('q');
+    q = lib.q;
   
   function PromiseMapperJob(promiseproviderarry, paramarry) {
     JobBase.call(this);

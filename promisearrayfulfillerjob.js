@@ -1,7 +1,7 @@
 function createPromiseArrayFulfillerJob(execlib, JobBase) {
   'use strict';
   var lib = execlib.lib,
-    q = require('q');
+    q = lib.q;
 
   function PromiseArrayFulfillerJob(promiseproviderarry) {
     JobBase.call(this);

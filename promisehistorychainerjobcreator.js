@@ -1,7 +1,7 @@
 function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob) {
   'use strict';
   var lib = execlib.lib,
-    q = require('q');
+    q = lib.q;
   
   function PromiseHistoryChainerJob(promiseproviderarry) {
     JobBase.call(this);

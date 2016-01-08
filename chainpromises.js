@@ -1,7 +1,7 @@
 function create(execlib){
   /// todo: introduce policies .... reject if first rejected, reject if any rejected, but execute all, pass results to next and so on ...
-  var q = require('q'),
-    lib = execlib.lib,
+  var lib = execlib.lib,
+    q = lib.q
     runNext = lib.runNext;
 
   function Chainer(ftions) {
