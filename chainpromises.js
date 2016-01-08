@@ -1,7 +1,6 @@
-function create(execlib){
+function create(execlib,q){
   /// todo: introduce policies .... reject if first rejected, reject if any rejected, but execute all, pass results to next and so on ...
   var lib = execlib.lib,
-    q = lib.q
     runNext = lib.runNext;
 
   function Chainer(ftions) {

@@ -1,11 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-ALLEX.lib.qlib = require('./index');
+ALLEX.lib.qlib = require('./index')({lib:ALLEX.lib}, ALLEX.lib.q);
 
 },{"./index":3}],2:[function(require,module,exports){
-function create(execlib){
+function create(execlib,q){
   /// todo: introduce policies .... reject if first rejected, reject if any rejected, but execute all, pass results to next and so on ...
   var lib = execlib.lib,
-    q = lib.q
     runNext = lib.runNext;
 
   function Chainer(ftions) {
@@ -59,19 +58,17 @@ function create(execlib){
 module.exports = create;
 
 },{}],3:[function(require,module,exports){
-function createlib (execlib) {
+function createlib (execlib, q) {
   'use strict';
   var lib = execlib.lib;
-  console.log('============>>', lib.q);
-  var q = lib.q;
 
-  var JobBase = require('./jobbasecreator')(execlib),
-    PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase),
-    PromiseChainerJob= require('./promisechainerjobcreator')(execlib, PromiseArrayFulfillerJob),
-    PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, PromiseArrayFulfillerJob),
-    PromiseHistoryChainerJob = require('./promisehistorychainerjobcreator')(execlib, JobBase, PromiseChainerJob),
-    PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob),
-    PromiseExecutionMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseExecutorJob);
+  var JobBase = require('./jobbasecreator')(execlib, q),
+    PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase, q),
+    PromiseChainerJob= require('./promisechainerjobcreator')(execlib, PromiseArrayFulfillerJob, q),
+    PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, PromiseArrayFulfillerJob, q),
+    PromiseHistoryChainerJob = require('./promisehistorychainerjobcreator')(execlib, JobBase, PromiseChainerJob, q),
+    PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob, q),
+    PromiseExecutionMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseExecutorJob, q);
 
   function returner(val) {
     return function() {
@@ -128,7 +125,7 @@ function createlib (execlib) {
     return promise;
   }
   var ret = {
-    chainPromises : require('./chainpromises')(execlib),
+    chainPromises : require('./chainpromises')(execlib, q),
     JobBase: JobBase,
     PromiseChainerJob: PromiseChainerJob,
     PromiseExecutorJob: PromiseExecutorJob,
@@ -143,8 +140,8 @@ function createlib (execlib) {
     promise2console: promise2console
   };
 
-  ret.PromiseChainMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseMapperJob);
-  ret.PromiseExecutionMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseExecutionMapperJob);
+  ret.PromiseChainMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseMapperJob, q);
+  ret.PromiseExecutionMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseExecutionMapperJob, q);
   
   return ret;
 }
@@ -152,10 +149,9 @@ function createlib (execlib) {
 module.exports = createlib;
 
 },{"./chainpromises":2,"./jobbasecreator":4,"./jobcollectioncreator":5,"./promisearrayfulfillerjob":6,"./promisechainerjobcreator":7,"./promiseexecutionmapreducercreator":8,"./promiseexecutorjobcreator":9,"./promisehistorychainerjobcreator":10,"./promisemapperjobcreator":11}],4:[function(require,module,exports){
-function createJobBase(execlib) {
+function createJobBase(execlib, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
 
   function JobBase(defer) {
     this.defer = (defer && q.isPromise(defer.promise)) ? defer : q.defer();
@@ -200,10 +196,9 @@ function createJobBase(execlib) {
 module.exports = createJobBase;
 
 },{}],5:[function(require,module,exports){
-function createJobCollection(execlib) {
+function createJobCollection(execlib, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
 
   function Lock() {
     this.defer = null;
@@ -268,10 +263,9 @@ function createJobCollection(execlib) {
 module.exports = createJobCollection;
 
 },{}],6:[function(require,module,exports){
-function createPromiseArrayFulfillerJob(execlib, JobBase) {
+function createPromiseArrayFulfillerJob(execlib, JobBase, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
 
   function PromiseArrayFulfillerJob(promiseproviderarry) {
     JobBase.call(this);
@@ -307,7 +301,7 @@ module.exports = createPromiseArrayFulfillerJob;
 
 
 },{}],7:[function(require,module,exports){
-function createPromiseChainerJob(execlib, PromiseArrayFulfillerJob) {
+function createPromiseChainerJob(execlib, PromiseArrayFulfillerJob, q) {
   'use strict';
   var lib = execlib.lib;
 
@@ -326,9 +320,8 @@ function createPromiseChainerJob(execlib, PromiseArrayFulfillerJob) {
 module.exports = createPromiseChainerJob;
 
 },{}],8:[function(require,module,exports){
-function createPromiseExecutionMapReducer (execlib, qlib, MapperJob) {
-  var lib = execlib.lib,
-    q = lib.q;
+function createPromiseExecutionMapReducer (execlib, qlib, MapperJob, q) {
+  var lib = execlib.lib;
 
   function PromiseExecutionMapReducer(promiseproviderarry, paramarry, fn, ctx) {
     qlib.JobBase.call(this);
@@ -359,7 +352,7 @@ function createPromiseExecutionMapReducer (execlib, qlib, MapperJob) {
 module.exports = createPromiseExecutionMapReducer;
 
 },{}],9:[function(require,module,exports){
-function createPromiseExecutorJob(execlib, PromiseArrayFulfillerJob) {
+function createPromiseExecutorJob(execlib, PromiseArrayFulfillerJob, q) {
   'use strict';
   var lib = execlib.lib;
 
@@ -378,10 +371,9 @@ function createPromiseExecutorJob(execlib, PromiseArrayFulfillerJob) {
 module.exports = createPromiseExecutorJob;
 
 },{}],10:[function(require,module,exports){
-function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob) {
+function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
   
   function PromiseHistoryChainerJob(promiseproviderarry) {
     JobBase.call(this);
@@ -431,10 +423,9 @@ function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob) {
 module.exports = createPromiseHistoryChainer;
 
 },{}],11:[function(require,module,exports){
-function createPromiseMapper(execlib, JobBase, PromiseArrayFulfillerJob) {
+function createPromiseMapper(execlib, JobBase, PromiseArrayFulfillerJob, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
   
   function PromiseMapperJob(promiseproviderarry, paramarry) {
     JobBase.call(this);

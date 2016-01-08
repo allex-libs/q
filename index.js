@@ -1,16 +1,14 @@
-function createlib (execlib) {
+function createlib (execlib, q) {
   'use strict';
   var lib = execlib.lib;
-  console.log('============>>', lib.q);
-  var q = lib.q;
 
-  var JobBase = require('./jobbasecreator')(execlib),
-    PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase),
-    PromiseChainerJob= require('./promisechainerjobcreator')(execlib, PromiseArrayFulfillerJob),
-    PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, PromiseArrayFulfillerJob),
-    PromiseHistoryChainerJob = require('./promisehistorychainerjobcreator')(execlib, JobBase, PromiseChainerJob),
-    PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob),
-    PromiseExecutionMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseExecutorJob);
+  var JobBase = require('./jobbasecreator')(execlib, q),
+    PromiseArrayFulfillerJob = require('./promisearrayfulfillerjob')(execlib, JobBase, q),
+    PromiseChainerJob= require('./promisechainerjobcreator')(execlib, PromiseArrayFulfillerJob, q),
+    PromiseExecutorJob= require('./promiseexecutorjobcreator')(execlib, PromiseArrayFulfillerJob, q),
+    PromiseHistoryChainerJob = require('./promisehistorychainerjobcreator')(execlib, JobBase, PromiseChainerJob, q),
+    PromiseMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseChainerJob, q),
+    PromiseExecutionMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseExecutorJob, q);
 
   function returner(val) {
     return function() {
@@ -67,7 +65,7 @@ function createlib (execlib) {
     return promise;
   }
   var ret = {
-    chainPromises : require('./chainpromises')(execlib),
+    chainPromises : require('./chainpromises')(execlib, q),
     JobBase: JobBase,
     PromiseChainerJob: PromiseChainerJob,
     PromiseExecutorJob: PromiseExecutorJob,
@@ -82,8 +80,8 @@ function createlib (execlib) {
     promise2console: promise2console
   };
 
-  ret.PromiseChainMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseMapperJob);
-  ret.PromiseExecutionMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseExecutionMapperJob);
+  ret.PromiseChainMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseMapperJob, q);
+  ret.PromiseExecutionMapReducerJob = require('./promiseexecutionmapreducercreator')(execlib, ret, PromiseExecutionMapperJob, q);
   
   return ret;
 }

@@ -1,4 +1,4 @@
-function createPromiseExecutorJob(execlib, PromiseArrayFulfillerJob) {
+function createPromiseExecutorJob(execlib, PromiseArrayFulfillerJob, q) {
   'use strict';
   var lib = execlib.lib;
 

@@ -1,7 +1,6 @@
-function createJobBase(execlib) {
+function createJobBase(execlib, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
 
   function JobBase(defer) {
     this.defer = (defer && q.isPromise(defer.promise)) ? defer : q.defer();

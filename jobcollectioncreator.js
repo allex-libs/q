@@ -1,7 +1,6 @@
-function createJobCollection(execlib) {
+function createJobCollection(execlib, q) {
   'use strict';
-  var lib = execlib.lib,
-    q = lib.q;
+  var lib = execlib.lib;
 
   function Lock() {
     this.defer = null;
