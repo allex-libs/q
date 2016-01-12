@@ -15,6 +15,11 @@ function createlib (execlib, q) {
       return val;
     }
   };
+  function propertyreturner(obj, propertyname) {
+    return function () {
+      return obj[propertyname];
+    }
+  }
   function executor(fn, ctx) {
     return function () {
       return fn.call(ctx);
@@ -73,6 +78,7 @@ function createlib (execlib, q) {
     PromiseMapperJob: PromiseMapperJob,
     JobCollection: require('./jobcollectioncreator')(execlib),
     returner: returner,
+    propertyreturner: propertyreturner,
     executor: executor,
     applier: applier,
     promise2defer: promise2defer,
