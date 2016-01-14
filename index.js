@@ -12,12 +12,12 @@ function createlib (execlib, q) {
 
   function returner(val) {
     return function() {
-      return val;
+      return q(val);
     }
   };
   function propertyreturner(obj, propertyname) {
     return function () {
-      return obj[propertyname];
+      return q(obj[propertyname]);
     }
   }
   function executor(fn, ctx) {
