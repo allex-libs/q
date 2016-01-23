@@ -20,6 +20,15 @@ function createlib (execlib, q) {
       return q(obj[propertyname]);
     }
   }
+  function resultpropertyreturner(propertyname) {
+    return function (result) {
+      if (result && 'object' === typeof result && result.hasOwnProperty(propertyname)) {
+        return q(result[propertyname]);
+      } else {
+        return q(null);
+      }
+    }
+  }
   function executor(fn, ctx) {
     return function () {
       return fn.call(ctx);
@@ -79,6 +88,7 @@ function createlib (execlib, q) {
     JobCollection: require('./jobcollectioncreator')(execlib),
     returner: returner,
     propertyreturner: propertyreturner,
+    resultpropertyreturner: resultpropertyreturner,
     executor: executor,
     applier: applier,
     promise2defer: promise2defer,
