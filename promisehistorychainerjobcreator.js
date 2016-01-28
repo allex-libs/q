@@ -12,8 +12,7 @@ function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob, q) {
     JobBase.prototype.destroy.call(this);
   };
   PromiseHistoryChainerJob.prototype.go = function () {
-    var result = [];
-    console.log('creating chainer');
+    var result = [], p = this.defer.promise;
     var chainer = new PromiseChainerJob(this.promiseproviderarry.map(this.resultPutter.bind(this, result)));
     chainer.defer.promise.then(
       this.resolve.bind(this),
@@ -23,9 +22,8 @@ function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob, q) {
       this.resolve.bind(this),
       this.reject.bind(this)
     );
-    console.log('running chainer');
     chainer.go();
-    return this.defer.promise;
+    return p;
   };
   PromiseHistoryChainerJob.prototype.resultPutter = function (result, promiseprovider) {
     return function (input) {

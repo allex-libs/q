@@ -14,14 +14,14 @@ function createPromiseMapper(execlib, JobBase, PromiseArrayFulfillerJob, q) {
     JobBase.prototype.destroy.call(this);
   };
   PromiseMapperJob.prototype.go = function () {
-    var result = this.paramarry;
+    var result = this.paramarry, p = this.defer.promise;
     var chainer = new PromiseArrayFulfillerJob(this.promiseproviderarry.map(this.resultPutter.bind(this, result)));
     chainer.defer.promise.then(
       this.resolve.bind(this, result),
       this.reject.bind(this)
     );
     chainer.go();
-    return this.defer.promise;
+    return p;
   };
   PromiseMapperJob.prototype.resultPutter = function (result, promiseprovider) {
     return function (input) {

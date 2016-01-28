@@ -15,13 +15,14 @@ function createPromiseExecutionMapReducer (execlib, qlib, MapperJob, q) {
   };
 
   PromiseExecutionMapReducer.prototype.go = function () {
+    var p = this.defer.promise;
     this.mapper.go().then(
       this.applier
     ).then(
       this.resolve.bind(this),
       this.reject.bind(this)
     );
-    return this.defer.promise;
+    return p;
   };
 
   return PromiseExecutionMapReducer;
