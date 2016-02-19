@@ -39,6 +39,12 @@ function createlib (execlib, q) {
       return fn.apply(ctx, arry);
     };
   }
+  function methodinvoker(methodname) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return function (instance) {
+      return q(instance[methodname].apply(instance, args));
+    }
+  }
   function promise2defer(promise, defer) {
     promise.then(
       defer.resolve.bind(defer),
@@ -91,6 +97,7 @@ function createlib (execlib, q) {
     resultpropertyreturner: resultpropertyreturner,
     executor: executor,
     applier: applier,
+    methodinvoker: methodinvoker,
     promise2defer: promise2defer,
     promise2execution: promise2execution,
     promise2console: promise2console
