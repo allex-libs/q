@@ -72,9 +72,23 @@ function createlib (execlib, q) {
 
   function returner(val) {
     return function() {
-      return val;
+      return q(val);
     }
   };
+  function propertyreturner(obj, propertyname) {
+    return function () {
+      return q(obj[propertyname]);
+    }
+  }
+  function resultpropertyreturner(propertyname) {
+    return function (result) {
+      if (result && 'object' === typeof result && result.hasOwnProperty(propertyname)) {
+        return q(result[propertyname]);
+      } else {
+        return q(null);
+      }
+    }
+  }
   function executor(fn, ctx) {
     return function () {
       return fn.call(ctx);
@@ -84,6 +98,12 @@ function createlib (execlib, q) {
     return function (arry) {
       return fn.apply(ctx, arry);
     };
+  }
+  function methodinvoker(methodname) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return function (instance) {
+      return q(instance[methodname].apply(instance, args));
+    }
   }
   function promise2defer(promise, defer) {
     promise.then(
@@ -133,8 +153,11 @@ function createlib (execlib, q) {
     PromiseMapperJob: PromiseMapperJob,
     JobCollection: require('./jobcollectioncreator')(execlib),
     returner: returner,
+    propertyreturner: propertyreturner,
+    resultpropertyreturner: resultpropertyreturner,
     executor: executor,
     applier: applier,
+    methodinvoker: methodinvoker,
     promise2defer: promise2defer,
     promise2execution: promise2execution,
     promise2console: promise2console
@@ -277,8 +300,9 @@ function createPromiseArrayFulfillerJob(execlib, JobBase, q) {
     JobBase.prototype.destroy.call(this);
   };
   PromiseArrayFulfillerJob.prototype.go = function () {
+    var p = this.defer.promise;
     this.doPromise(0);
-    return this.defer.promise;
+    return p;
   };
   PromiseArrayFulfillerJob.prototype.doPromise = function (index, result) {
     //console.log('doing promise at', index, 'out of', this.promiseproviderarry.length);
@@ -337,13 +361,14 @@ function createPromiseExecutionMapReducer (execlib, qlib, MapperJob, q) {
   };
 
   PromiseExecutionMapReducer.prototype.go = function () {
+    var p = this.defer.promise;
     this.mapper.go().then(
       this.applier
     ).then(
       this.resolve.bind(this),
       this.reject.bind(this)
     );
-    return this.defer.promise;
+    return p;
   };
 
   return PromiseExecutionMapReducer;
@@ -385,8 +410,7 @@ function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob, q) {
     JobBase.prototype.destroy.call(this);
   };
   PromiseHistoryChainerJob.prototype.go = function () {
-    var result = [];
-    console.log('creating chainer');
+    var result = [], p = this.defer.promise;
     var chainer = new PromiseChainerJob(this.promiseproviderarry.map(this.resultPutter.bind(this, result)));
     chainer.defer.promise.then(
       this.resolve.bind(this),
@@ -396,9 +420,8 @@ function createPromiseHistoryChainer(execlib, JobBase, PromiseChainerJob, q) {
       this.resolve.bind(this),
       this.reject.bind(this)
     );
-    console.log('running chainer');
     chainer.go();
-    return this.defer.promise;
+    return p;
   };
   PromiseHistoryChainerJob.prototype.resultPutter = function (result, promiseprovider) {
     return function (input) {
@@ -439,14 +462,14 @@ function createPromiseMapper(execlib, JobBase, PromiseArrayFulfillerJob, q) {
     JobBase.prototype.destroy.call(this);
   };
   PromiseMapperJob.prototype.go = function () {
-    var result = this.paramarry;
+    var result = this.paramarry, p = this.defer.promise;
     var chainer = new PromiseArrayFulfillerJob(this.promiseproviderarry.map(this.resultPutter.bind(this, result)));
     chainer.defer.promise.then(
       this.resolve.bind(this, result),
       this.reject.bind(this)
     );
     chainer.go();
-    return this.defer.promise;
+    return p;
   };
   PromiseMapperJob.prototype.resultPutter = function (result, promiseprovider) {
     return function (input) {
