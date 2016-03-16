@@ -26,7 +26,8 @@ function createPromiseArrayFulfillerJob(execlib, JobBase, q) {
       promise = this.activatePromiseProvider(promiseprovider, result);
     promise.then(
       this.doPromise.bind(this, index+1),
-      this.reject.bind(this)
+      this.reject.bind(this),
+      this.notify.bind(this)
     );
   };
 
