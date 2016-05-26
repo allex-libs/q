@@ -12,8 +12,10 @@ function createlib (execlib) {
     PromiseExecutionMapperJob = require('./promisemapperjobcreator')(execlib, JobBase, PromiseExecutorJob, q);
 
   function returner(val) {
+    var _q = q;
     return function() {
-      var ret = q(val);
+      var ret = _q(val);
+      _q = null;
       val = null;
       return ret;
     }

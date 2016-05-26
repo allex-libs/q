@@ -2,18 +2,20 @@ function createJobCollection(execlib, q) {
   'use strict';
   var lib = execlib.lib;
 
+  function destructionDrainer (j) {
+    j.reject(new lib.Error('JOB_COLLECTION_DESTROYING'));
+  }
+
   function Lock() {
     this.defer = null;
     this.q = new lib.Fifo();
     this.nexter = this.next.bind(this);
+    this.activator = this.activate.bind(this);
   }
   Lock.prototype.destroy = function () {
-    var j;
+    this.activator = null;
     this.nexter = null;
-    while(this.q.length) {
-      j = this.q.pop();
-      j.reject(new lib.Error('JOB_COLLECTION_DESTROYING'));
-    }
+    this.q.drain(destructionDrainer);
     this.q.destroy();
     this.defer = null;
   };
@@ -35,10 +37,7 @@ function createJobCollection(execlib, q) {
   };
   Lock.prototype.next = function () {
     this.defer = null;
-    var job = this.q.pop();
-    if (job) {
-      this.activate(job);
-    }
+    this.q.pop(this.activator);
   };
 
   function JobCollection () {
